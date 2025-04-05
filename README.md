@@ -16,7 +16,7 @@ Este proyecto simula el comportamiento del nivel de líquido en un tanque vertic
 ├── datos_realidad.csv # Datos medidos en modelo físico
 ├── datos_realidad_sin_per.csv # Datos medido en modelo físico con perturbaciones
 ├── gráficos  #Carpeta que contiene las imágenes generadas
-└── valores_defect.csv (opcional) # Archivo con parámetros por defecto
+└── valores_defecto.csv (opcional) # Archivo con parámetros por defecto
 ```
 ## 📜 Licencia
 MIT © [JuDa](https://github.com/Juda-Tech-Green)
