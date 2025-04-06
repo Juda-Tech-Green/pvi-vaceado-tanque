@@ -13,10 +13,10 @@ Este proyecto simula el comportamiento del nivel de líquido en un tanque vertic
 ├── Rk4.py # Contiene la lógica para resolver el PVI 
 ├── main.py # Interfaz gráfica del usuario con Tkinter 
 ├── README.md # Este archivo 
-├── datos_realidad.csv # Datos medidos en modelo físico
 ├── datos_realidad_sin_per.csv # Datos medido en modelo físico con perturbaciones
+├── preview.PNG  # Imagen de ejemplo de la interfaz
 ├── gráficos  #Carpeta que contiene las imágenes generadas
-└── valores_defecto.csv (opcional) # Archivo con parámetros por defecto
+└── valores_defecto.csv  # Archivo con parámetros por defecto
 ```
 ## 📜 Licencia
 MIT © [JuDa](https://github.com/Juda-Tech-Green)
