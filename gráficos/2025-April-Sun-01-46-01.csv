@@ -1,0 +1,14 @@
+Parámetro,Valor
+ti,0.0
+tf,40.0
+dt,0.01
+h_max,15.0
+Atv,31.1742
+Ao,0.1963
+Qin,15.0
+g,981.0
+Cm,0.78
+t_per1,12.0
+Qin_per,15.0
+t_per2,16.0
+V_per,50.0
