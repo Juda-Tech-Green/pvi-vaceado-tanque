@@ -1,78 +1,139 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
-import pandas as pd
 from datetime import datetime
 from math import sqrt
 
 
-
+# Cargar los valores por defecto en un diccionario
 valores_defecto = {}
 with open('./valores_defecto.csv', 'r') as file:
     reader = csv.reader(file)
     for fila in reader:
         valores_defecto[fila[0]] = float(fila[1])
-def solve_pvi(ti ,
-              tf ,
-              dt ,
-              h_max ,
-              Atv ,
-              Ao ,
-              Qin ,
-              g ,
-              Cm ):
-    hora_simulacion = datetime.now().strftime('%H')+datetime.now().strftime('%M')+datetime.now().strftime('%S')
-    # Parámetrosde simulación [cm] [s]
 
 
+def solve_pvi(ti,
+              tf,
+              dt,
+              h_max,
+              ho,
+              Atv,
+              Ao,
+              Qin,
+              g,
+              Cm,
+              t_per1,
+              Qin_per,
+              t_per2,
+              V_per,
+              guardar=False):
+    """Esta es la función principal donde se toma """
 
+
+    # Calcular el numero de iteraciones
     numero_paso = int((tf - ti) / dt)
 
-
-
-
-
-
-    # Import real data
-    data_real = np.genfromtxt(fname='./datos_realidad_sin_per.csv',delimiter=',',skip_header=1)
+    # Import data del modelo físico
+    data_real = np.genfromtxt(fname='./datos_realidad_sin_per.csv', delimiter=',', skip_header=1)
     # Condición inicial
-    h = h_max
+    h = ho
 
     # arreglos par almacenar resultados
 
     vector_tiempo = []
     vector_h = []
-
+    perturbacion_volumen = True  # se usa para aplicar V_per solo una vez - SWITCHE
     for i in range(numero_paso):
+        """Bucle de Runge-Kutta 4to orden"""
         t = ti + dt * i
         vector_tiempo.append(t)
         vector_h.append(h)
+
+        # PERTURBACIÓN 1: cambio de caudal a partir de t_per1
+        Qin_efectivo = Qin  # valor por defecto
+        if t >= t_per1 and Qin_per != 0:
+            Qin_efectivo = Qin_per
+        # PERTURBACIÓN 2: añadir volumen
+        if perturbacion_volumen and t >= t_per2 and V_per != 0:
+            h += V_per / Atv
+            perturbacion_volumen = False  # Apagar switche
+
         # Ecuaciones para RK4
-        # Estimacion cuatro
         try:
-            if (h>0.01):
+            if h > 0.01:
                 # Estimación pendientes
-                k1 = (1 / Atv) * (Qin - Ao * Cm * (sqrt(2 * g * h)))
-                k2 = (1 / Atv) * (Qin - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k1 * dt))))
-                k3 = (1 / Atv) * (Qin - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k2 * dt))))
-                k4 = (1 / Atv) * (Qin - Ao * Cm * (sqrt(2 * g * (h + k3 * dt))))
-                # Pendiente ponderada
-                dhdt = (k1 + (2 * k2) + (2 * k3) + k4) / 6
-                # Nuevo valor de h
-                h = h + dhdt * dt
-            else:
-                break
+                k1 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * h)))
+                k2 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k1 * dt))))
+                k3 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k2 * dt))))
+                k4 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + k3 * dt))))
+
+                dhdt = (k1 + 2 * k2 + 2 * k3 + k4) / 6
+                h += dhdt * dt
+
+            #  Limitar h a h_max si se pasa
+            if h > h_max:
+                h = h_max
+
         except ValueError:
             pass
 
+    # Generar gráfico
     plt.clf()
-    plt.plot(vector_tiempo,vector_h,label='Simulación modelo')
-    plt.plot(data_real[:,0],data_real[:,1],label='Datos reales',linestyle='--')
+    #plt.figure(figsize=(10, 6))
+    plt.plot(vector_tiempo, vector_h, label='Simulación modelo')
+    plt.plot(data_real[:, 0], data_real[:, 1], label='Datos reales', linestyle='--', color='purple')
+    plt.axhline(h_max, color='red', linestyle=':', label='Altura máxima')
+
     plt.legend(loc=1)
-    plt.title(label='Modelo Sin perturbaciones',fontsize=14,color='black')
+    plt.title(label='Altura del tanque a lo largo del tiempo', fontsize=14, color='black')
     plt.xlabel('Tiempo (s)')
     plt.ylabel('Altura (cm)')
     plt.grid(color='gray')
-    ult_archivo = f'./gráficos/resultado_{hora_simulacion}.png'
-    plt.savefig(ult_archivo)
-    return ult_archivo
+    plt.tight_layout()
+
+
+
+
+    # Almacenar datos de ultima simulación
+
+    if guardar:
+        # Datos entrada de simulación
+        datos_entrada = {
+            'ti': ti,
+            'tf': tf,
+            'dt': dt,
+            'h_max': h_max,
+            'Atv': Atv,
+            'Ao': Ao,
+            'Qin': Qin_efectivo,
+            'g': g,
+            'Cm': Cm,
+            't_per1': t_per1,
+            'Qin_per': Qin_per,
+            't_per2': t_per2,
+            'V_per': V_per
+        }
+        # Obtener día y hora de la simulación
+        fecha_simulacion = (datetime.now().strftime('%Y') + '-' +  # Año
+                            datetime.now().strftime('%B') + '-' +  # Mes
+                            datetime.now().strftime('%a') + '-' +  # Día
+                            datetime.now().strftime('%H') + '-' +  # Hora
+                            datetime.now().strftime('%M') + '-' +  # Minuto
+                            datetime.now().strftime('%S'))  # Segundo
+        # Ruta donde guardar archivo
+        ult_archivo = f'./gráficos/{fecha_simulacion}.png'
+        # Crear el documento e imagen
+        plt.savefig(ult_archivo)
+        with open(f'./gráficos/{fecha_simulacion}.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Parámetro', 'Valor'])  # Encabezados
+            for clave, valor in datos_entrada.items():
+                writer.writerow([clave, valor])
+        plt.savefig(f"./grafico_actual.png")
+        plt.close()
+        return f"./grafico_actual.png"
+    else:
+        plt.savefig(f"./grafico_actual.png")
+        plt.close()
+        return f"./grafico_actual.png"
