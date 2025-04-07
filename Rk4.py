@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+from pandas import DataFrame
 from datetime import datetime
 from math import sqrt
 
 
-# Cargar los valores por defecto en un diccionario
+# Cargar los valores por defecto en un diccionario para después cargarlos en la interfaz
 valores_defecto = {}
 with open('./valores_defecto.csv', 'r') as file:
     reader = csv.reader(file)
@@ -28,7 +29,7 @@ def solve_pvi(ti,
               t_per2,
               V_per,
               guardar=False):
-    """Esta es la función principal donde se toma """
+    """Esta es la función principal donde se toma todos los parámetros de entrada y devuelve el gráfico"""
 
 
     # Calcular el numero de iteraciones
@@ -61,7 +62,7 @@ def solve_pvi(ti,
 
         # Ecuaciones para RK4
         try:
-            if h > 0.01:
+            if h > 0.001:
                 # Estimación pendientes
                 k1 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * h)))
                 k2 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k1 * dt))))
@@ -96,7 +97,6 @@ def solve_pvi(ti,
 
 
     # Almacenar datos de ultima simulación
-
     if guardar:
         # Datos entrada de simulación
         datos_entrada = {
@@ -114,6 +114,10 @@ def solve_pvi(ti,
             't_per2': t_per2,
             'V_per': V_per
         }
+        resultados_simulacion ={
+            'Tiempo (s)': vector_tiempo,
+            'Altura (cm)':vector_h
+        }
         # Obtener día y hora de la simulación
         fecha_simulacion = (datetime.now().strftime('%Y') + '-' +  # Año
                             datetime.now().strftime('%B') + '-' +  # Mes
@@ -122,18 +126,24 @@ def solve_pvi(ti,
                             datetime.now().strftime('%M') + '-' +  # Minuto
                             datetime.now().strftime('%S'))  # Segundo
         # Ruta donde guardar archivo
-        ult_archivo = f'./gráficos/{fecha_simulacion}.png'
-        # Crear el documento e imagen
+        ult_archivo = f'./resultados/{fecha_simulacion}.png'
+
         plt.savefig(ult_archivo)
-        with open(f'./gráficos/{fecha_simulacion}.csv', 'w', newline='') as file:
+        # Guardar datos de entrada
+        with open(f'./resultados/{fecha_simulacion}.csv', 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['Parámetro', 'Valor'])  # Encabezados
             for clave, valor in datos_entrada.items():
                 writer.writerow([clave, valor])
+        # Guardar resultados de simulación en csv
+        resultados_DataFrame = DataFrame(resultados_simulacion)
+        resultados_DataFrame.to_csv(f'./resultados/datos-{fecha_simulacion}.csv',index=False)
+        # Enviar gráfico para visualización
         plt.savefig(f"./grafico_actual.png")
         plt.close()
         return f"./grafico_actual.png"
     else:
+        # Enviar gráfico para visualización
         plt.savefig(f"./grafico_actual.png")
         plt.close()
         return f"./grafico_actual.png"

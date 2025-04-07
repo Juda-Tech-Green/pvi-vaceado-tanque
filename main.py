@@ -14,28 +14,37 @@ form_frame.grid(row=0, column=0, sticky='n')
 plot_canvas = Canvas(window, width=680, height=600)
 plot_canvas.grid(row=0, column=1, padx=10, pady=10)
 
+
 def reset_valores_defecto():
     """Esta función toma de nuevo los valores por defecto del archivo valores_defecto.csv"""
-    ti_entry.delete(0,END)
-    tf_entry.delete(0,END)
-    dt_entry.delete(0,END)
-    hmax_entry.delete(0,END)
-    ho_entry.delete(0,END)
-    Atv_entry.delete(0,END)
-    Ao_entry.delete(0,END)
-    g_entry.delete(0,END)
-    Qin_entry.delete(0,END)
-    Cm_entry.delete(0,END)
-    ti_entry.insert(END,valores_defecto['ti'])
-    tf_entry.insert(END,valores_defecto['tf'])
-    dt_entry.insert(END,valores_defecto['dt'])
-    hmax_entry.insert(END,valores_defecto['h_max'])
-    ho_entry.insert(END,valores_defecto['ho'])
-    Atv_entry.insert(END,valores_defecto['Atv'])
-    Ao_entry.insert(END,valores_defecto['Ao'])
-    g_entry.insert(END,valores_defecto['g'])
-    Qin_entry.insert(END,valores_defecto['Qin'])
-    Cm_entry.insert(END,valores_defecto['Cm'])
+    ti_entry.delete(0, END)
+    tf_entry.delete(0, END)
+    dt_entry.delete(0, END)
+    hmax_entry.delete(0, END)
+    ho_entry.delete(0, END)
+    Atv_entry.delete(0, END)
+    Ao_entry.delete(0, END)
+    g_entry.delete(0, END)
+    Qin_entry.delete(0, END)
+    Cm_entry.delete(0, END)
+    t_per1_entry.delete(0, END)
+    Qin_per_entry.delete(0, END)
+    t_per2_entry.delete(0, END)
+    V_per_entry.delete(0, END)
+    ti_entry.insert(END, valores_defecto['ti'])
+    tf_entry.insert(END, valores_defecto['tf'])
+    dt_entry.insert(END, valores_defecto['dt'])
+    hmax_entry.insert(END, valores_defecto['h_max'])
+    ho_entry.insert(END, valores_defecto['ho'])
+    Atv_entry.insert(END, valores_defecto['Atv'])
+    Ao_entry.insert(END, valores_defecto['Ao'])
+    g_entry.insert(END, valores_defecto['g'])
+    Qin_entry.insert(END, valores_defecto['Qin'])
+    Cm_entry.insert(END, valores_defecto['Cm'])
+    t_per1_entry.insert(END, '0')
+    Qin_per_entry.insert(END, '0')
+    t_per2_entry.insert(END, '0')
+    V_per_entry.insert(END, '0')
 
 
 def obtener_valores():
@@ -56,19 +65,24 @@ def obtener_valores():
         t_per2 = float(t_per2_entry.get())
         V_per = float(V_per_entry.get())
         guardar = CheckVar1.get()
-        datos = [ti, tf, dt, h_max, ho, Atv, Ao, Qin, g, Cm, t_per1, Qin_per, t_per2, V_per,guardar]
+        datos = [ti, tf, dt, h_max, ho, Atv, Ao, Qin, g, Cm, t_per1, Qin_per, t_per2, V_per, guardar]
         resultado = solve_pvi(ti, tf, dt, h_max, ho, Atv, Ao, Qin, g, Cm, t_per1, Qin_per, t_per2, V_per, guardar)
+        # Verificadores de valores válidos
         for i in datos:
             if i < 0 or i == None:
                 messagebox.showerror("Error", "Verifique que los valores de entrada sean mayores a cero.")
                 return
-        if (dt>8):
-            messagebox.showwarning(title='Advertencia',message='Un valor dt mayor a 8 volverá la simulación inestable.')
-        if (ti>tf):
-            messagebox.showerror('Error','Valor de tiempo inicial mayor al tiempo final.')
+        if (dt > 8):
+            messagebox.showwarning(title='Advertencia',
+                                   message='Un valor dt mayor a 8 volverá la simulación inestable.')
+        if (ti > tf):
+            messagebox.showerror('Error', 'Valor de tiempo inicial mayor al tiempo final.')
             return
-        if (ho>h_max):
-            messagebox.showerror('Error','Valor de la altura inicial mayor a la altura máxima del tanque.')
+        if (ho > h_max):
+            messagebox.showerror('Error', 'Valor de la altura inicial mayor a la altura máxima del tanque.')
+            return
+        if t_per1>tf or t_per2>tf:
+            messagebox.showwarning('Advertencia','Tiempo de perturbaciones por fuera del tiempo final de la simulación.')
             return
         return resultado
     except ValueError:
@@ -103,7 +117,7 @@ entradas_label = Label(form_frame, text='Parámetros de entrada', font=('Segoe U
 entradas_label.grid(row=0, column=0, columnspan=2)
 ti_entry = add_row('Tiempo inicial (s)', 1, valores_defecto['ti'])
 tf_entry = add_row('Tiempo final (s)', 2, valores_defecto['tf'])
-dt_entry = add_row('Delta t (s)', 9, valores_defecto['dt'],fg='red')
+dt_entry = add_row('Delta t (s)', 9, valores_defecto['dt'], fg='red')
 hmax_entry = add_row('Altura máxima (cm)', 4, valores_defecto['h_max'])
 ho_entry = add_row('Altura inicial (cm)', 5, valores_defecto['ho'])
 Atv_entry = add_row('Área transversal tanque (cm²)', 6, valores_defecto['Atv'])
@@ -133,7 +147,7 @@ reset_values_btn = Button(form_frame, text='Valores por defecto', command=reset_
 reset_values_btn.grid(row=17, column=1)
 resolver_btn.grid(row=17, column=0, pady=10)
 # Check box para guardar imagen y simulación
-guardar_simulaion = Checkbutton(form_frame,text='Guardar gráfico y datos ',variable=CheckVar1)
-guardar_simulaion.grid(row=18,column=0)
+guardar_simulaion = Checkbutton(form_frame, text='Guardar gráfico y datos ', variable=CheckVar1)
+guardar_simulaion.grid(row=18, column=0)
 
 window.mainloop()
