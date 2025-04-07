@@ -4,7 +4,10 @@
 [![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)]()
 [![Licencia MIT](https://img.shields.io/badge/Licencia-MIT-green.svg)](LICENSE)
 
+<p>
 Este proyecto simula el comportamiento del nivel de líquido en un tanque vertical con entrada y salida de fluido, resolviendo una ecuación diferencial mediante el método de Runge-Kutta de 4to orden (RK4). La interfaz gráfica está desarrollada con `Tkinter` y permite ingresar parámetros para visualizar el comportamiento dinámico del sistema.
+</p>
+
 ![Password Manager Screenshot](./preview.PNG) 
 ---
 ## ⚙️ Tecnologías utilizadas
