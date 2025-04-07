@@ -48,6 +48,7 @@ def reset_valores_defecto():
 
 
 def obtener_valores():
+    tipo = None
     """Esta funcion toma los valores de los campos de entrada, envía los datos al módulo Rk4.py y retorna la ruta del png del gráfico, en caso de error en el tipo de variable de entrada se devuelve un mensaje de error"""
     try:
         ti = float(ti_entry.get())

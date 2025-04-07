@@ -29,7 +29,7 @@ def solve_pvi(ti,
               t_per2,
               V_per,
               guardar=False):
-    """Esta es la función principal donde se toma todos los parámetros de entrada y devuelve el gráfico"""
+    """Esta es la función principal donde se toman todos los parámetros de entrada y devuelve el gráfico"""
 
 
     # Calcular el numero de iteraciones
@@ -45,6 +45,8 @@ def solve_pvi(ti,
     vector_tiempo = []
     vector_h = []
     perturbacion_volumen = True  # se usa para aplicar V_per solo una vez - SWITCHE
+    perturbacion_caudal = True
+    Qin_efectivo = Qin  # valor por defecto
     for i in range(numero_paso):
         """Bucle de Runge-Kutta 4to orden"""
         t = ti + dt * i
@@ -52,11 +54,11 @@ def solve_pvi(ti,
         vector_h.append(h)
 
         # PERTURBACIÓN 1: cambio de caudal a partir de t_per1
-        Qin_efectivo = Qin  # valor por defecto
-        if t >= t_per1 and Qin_per != 0:
+        if perturbacion_caudal and t >= t_per1:
             Qin_efectivo = Qin_per
+            perturbacion_caudal = False
         # PERTURBACIÓN 2: añadir volumen
-        if perturbacion_volumen and t >= t_per2 and V_per != 0:
+        if perturbacion_volumen and t >= t_per2:
             h += V_per / Atv
             perturbacion_volumen = False  # Apagar switche
 
@@ -64,7 +66,7 @@ def solve_pvi(ti,
         try:
             if h > 0.001:
                 # Estimación pendientes
-                k1 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * h)))
+                k1 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * h))) # 0.00000001
                 k2 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k1 * dt))))
                 k3 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k2 * dt))))
                 k4 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + k3 * dt))))
