@@ -23,6 +23,10 @@ $$
 \frac{dh}{dt} = \frac{1}{A_T} \left( Q_e - CM \cdot A_0 \cdot \sqrt{2 \cdot g \cdot h} \right)
 $$
 
+$$
+h(0) = h_0
+$$
+
 ---
 ## ▶️ Forma de uso
 
