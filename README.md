@@ -43,17 +43,17 @@ $$
 ├── Rk4.py # Contiene la lógica para resolver el PVI 
 ├── main.py # Interfaz gráfica del usuario con Tkinter 
 ├── README.md # Este archivo 
-├── datos_realidad_sin_per.csv # Datos medido en modelo físico con perturbaciones
+├── datos_realidad_sin_per.csv # Datos medido en modelo físico sin perturbaciones
 ├── preview.PNG  # Imagen de ejemplo de la interfaz
 ├── resultados  #Carpeta que contendrá gráficos.png, datos de entrada en csv y resultados de tiempo y altura en csv.
 └── valores_defecto.csv  # Archivo con parámetros por defecto
 ```
 ---
 ## 💡 ¿Por qué construí esto?
-
-
+<p>
 Este proyecto nace de una necesidad académica y profesional de representar visualmente sistemas de vaciado de tanques —un fenómeno común en la ingeniería ambiental e hidráulica. El objetivo es proporcionar una herramienta práctica y didáctica para explorar el comportamiento dinámico de un tanque ante diferentes condiciones de entrada y salida de caudal.
 Además, sirve como una introducción funcional al uso de métodos numéricos como Runge-Kutta (RK4) con visualización gráfica en Python.
+</p>
 ---
 ## 📜 Licencia
 MIT © [JuDa](https://github.com/Juda-Tech-Green)
