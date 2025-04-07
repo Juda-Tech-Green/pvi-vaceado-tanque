@@ -50,6 +50,8 @@ $$
 ```
 ---
 ## 💡 ¿Por qué construí esto?
+
+
 Este proyecto nace de una necesidad académica y profesional de representar visualmente sistemas de vaciado de tanques —un fenómeno común en la ingeniería ambiental e hidráulica. El objetivo es proporcionar una herramienta práctica y didáctica para explorar el comportamiento dinámico de un tanque ante diferentes condiciones de entrada y salida de caudal.
 Además, sirve como una introducción funcional al uso de métodos numéricos como Runge-Kutta (RK4) con visualización gráfica en Python.
 ---
