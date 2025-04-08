@@ -14,20 +14,20 @@ with open('./valores_defecto.csv', 'r') as file:
         valores_defecto[fila[0]] = float(fila[1])
 
 
-def solve_pvi(ti,
-              tf,
-              dt,
-              h_max,
-              ho,
-              Atv,
-              Ao,
-              Qin,
-              g,
-              Cm,
-              t_per1,
-              Qin_per,
-              t_per2,
-              V_per,
+def solve_pvi(ti=valores_defecto['ti'],
+              tf=valores_defecto['tf'],
+              dt=valores_defecto['dt'],
+              h_max=valores_defecto['h_max'],
+              ho=valores_defecto['ho'],
+              Atv=valores_defecto['Atv'],
+              Ao=valores_defecto['Ao'],
+              Qin=valores_defecto['Qin'],
+              g=valores_defecto['g'],
+              Cm=valores_defecto['Cm'],
+              t_per1=valores_defecto['t_per1'],
+              Qin_per=valores_defecto['Qin_per'],
+              t_per2=valores_defecto['t_per2'],
+              V_per=valores_defecto['V_per'],
               guardar=False):
     """Esta es la función principal donde se toman todos los parámetros de entrada y devuelve el gráfico"""
 
@@ -54,25 +54,24 @@ def solve_pvi(ti,
         vector_h.append(h)
 
         # PERTURBACIÓN 1: cambio de caudal a partir de t_per1
-        if perturbacion_caudal and t >= t_per1:
+        if perturbacion_caudal and t >= t_per1 and t_per1 != 0:
             Qin_efectivo = Qin_per
             perturbacion_caudal = False
         # PERTURBACIÓN 2: añadir volumen
-        if perturbacion_volumen and t >= t_per2:
+        if perturbacion_volumen and t >= t_per2 and t_per2 != 0:
             h += V_per / Atv
             perturbacion_volumen = False  # Apagar switche
 
         # Ecuaciones para RK4
         try:
-            if h > 0.001:
-                # Estimación pendientes
-                k1 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * h))) # 0.00000001
-                k2 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k1 * dt))))
-                k3 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + 0.5 * k2 * dt))))
-                k4 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(2 * g * (h + k3 * dt))))
+            # Estimación pendientes
+            k1 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(round(2 * g * h,4))))  # 0.00000001
+            k2 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(round(2 * g * (h + 0.5 * k1 * dt),4))))
+            k3 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(round(2 * g * (h + 0.5 * k2 * dt),4))))
+            k4 = (1 / Atv) * (Qin_efectivo - Ao * Cm * (sqrt(round(2 * g * (h + k3 * dt),4))))
 
-                dhdt = (k1 + 2 * k2 + 2 * k3 + k4) / 6
-                h += dhdt * dt
+            dhdt = (k1 + 2 * k2 + 2 * k3 + k4) / 6
+            h += dhdt * dt
 
             #  Limitar h a h_max si se pasa
             if h > h_max:
@@ -94,8 +93,6 @@ def solve_pvi(ti,
     plt.ylabel('Altura (cm)')
     plt.grid(color='gray')
     plt.tight_layout()
-
-
 
 
     # Almacenar datos de ultima simulación
@@ -149,3 +146,6 @@ def solve_pvi(ti,
         plt.savefig(f"./grafico_actual.png")
         plt.close()
         return f"./grafico_actual.png"
+
+    # Ejecutar Modelo sin interfaz
+    #solve_pvi()

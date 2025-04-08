@@ -41,10 +41,10 @@ def reset_valores_defecto():
     g_entry.insert(END, valores_defecto['g'])
     Qin_entry.insert(END, valores_defecto['Qin'])
     Cm_entry.insert(END, valores_defecto['Cm'])
-    t_per1_entry.insert(END, '0')
-    Qin_per_entry.insert(END, '0')
-    t_per2_entry.insert(END, '0')
-    V_per_entry.insert(END, '0')
+    t_per1_entry.insert(END, valores_defecto['t_per1'])
+    Qin_per_entry.insert(END,valores_defecto['Qin_per'])
+    t_per2_entry.insert(END,valores_defecto['t_per2'])
+    V_per_entry.insert(END, valores_defecto['V_per'])
 
 
 def obtener_valores():
@@ -85,6 +85,10 @@ def obtener_valores():
         if t_per1>tf or t_per2>tf:
             messagebox.showwarning('Advertencia','Tiempo de perturbaciones por fuera del tiempo final de la simulación.')
             return
+        if t_per1==0 and Qin_per!=0:
+            messagebox.showwarning('Advertencia','El cambio de caudal no se efectuará pues el tiempo de ingreso de este cambio es cero.')
+        if t_per2==0 and V_per !=0:
+            messagebox.showwarning('Advertencia','El volumen de perturbación no se efectuará pues el tiempo de ingreso de este cambio es cero.')
         return resultado
     except ValueError:
         messagebox.showerror("Error", "Verifica que todos los valores numéricos sean válidos.")
@@ -151,4 +155,5 @@ resolver_btn.grid(row=17, column=0, pady=10)
 guardar_simulaion = Checkbutton(form_frame, text='Guardar gráfico y datos ', variable=CheckVar1)
 guardar_simulaion.grid(row=18, column=0)
 
+# Evita que la interfaz se cierre
 window.mainloop()
